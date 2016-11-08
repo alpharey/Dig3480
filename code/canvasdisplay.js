@@ -37,6 +37,7 @@ CanvasDisplay.prototype.drawFrame = function(step) {
   this.clearDisplay();
   this.drawBackground();
   this.drawActors();
+  //this.drawSlow();
 };
 
 CanvasDisplay.prototype.updateViewport = function() {
@@ -58,11 +59,11 @@ CanvasDisplay.prototype.updateViewport = function() {
 
 CanvasDisplay.prototype.clearDisplay = function() {
   if (this.level.status == "won")
-    this.cx.fillStyle = "rgb(68, 191, 255)";
+    this.cx.fillStyle = "rgb(255, 255, 255)";
   else if (this.level.status == "lost")
-    this.cx.fillStyle = "rgb(44, 136, 214)";
+    this.cx.fillStyle = "rgb(242, 44, 44)";
   else
-    this.cx.fillStyle = "rgb(52, 166, 251)";
+    this.cx.fillStyle = "rgb(122, 218, 247)";
   this.cx.fillRect(0, 0,
                    this.canvas.width, this.canvas.height);
 };
@@ -77,19 +78,23 @@ CanvasDisplay.prototype.drawBackground = function() {
   var yStart = Math.floor(view.top);
   var yEnd = Math.ceil(view.top + view.height);
 
-  for (var y = yStart; y < yEnd; y++) {
+	for (var y = yStart; y < yEnd; y++) {
     for (var x = xStart; x < xEnd; x++) {
       var tile = this.level.grid[y][x];
       if (tile == null) continue;
-      var screenX = (x - view.left) * scale;
+	  var screenX = (x - view.left) * scale;
       var screenY = (y - view.top) * scale;
       var tileX = tile == "lava" ? scale : 0;
+
       this.cx.drawImage(otherSprites,
                         tileX,         0, scale, scale,
                         screenX, screenY, scale, scale);
     }
   }
 };
+
+
+
 
 var playerSprites = document.createElement("img");
 playerSprites.src = "img/player.png";
@@ -127,11 +132,18 @@ CanvasDisplay.prototype.drawActors = function() {
     var y = (actor.pos.y - this.viewport.top) * scale;
     if (actor.type == "player") {
       this.drawPlayer(x, y, width, height);
-    } else {
+    } else if (actor.type == "slow"){
+	  var tileX = 3 * scale;
+      this.cx.drawImage(otherSprites,
+                    tileX, 0, width, height,
+                    x,              y, width, height);
+	} else {
       var tileX = (actor.type == "coin" ? 2 : 1) * scale;
       this.cx.drawImage(otherSprites,
                         tileX, 0, width, height,
                         x,     y, width, height);
-    }
+    } 
   }, this);
+  
 };
+
